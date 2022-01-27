@@ -38,6 +38,40 @@ class ReconhecimentoContract extends Contract {
         return asset;
     }
 
+    async updateUsuario(ctx, usuarioID, value) {
+        const exists = await this.usuarioExists(ctx, usuarioID);
+        if (!exists) {
+            throw new Error(`The usuario ${usuarioID} does not exist`);
+        }
+        var usuario = await ctx.stub.getState(usuarioID)
+        usuario = JSON.parse(usuario)
+        const asset = {
+            id: usuarioID,
+            hash: value,
+            saldoRetirada: usuario.saldoRetirada,
+            saldoParaEnviar: usuario.saldoParaEnviar,
+        };
+        const buffer = Buffer.from(JSON.stringify(asset));
+        await ctx.stub.putState(usuarioID, buffer);
+    }
+
+    async updateUsuarioProCiclo(ctx, usuarioID) {
+        const exists = await this.usuarioExists(ctx, usuarioID);
+        if (!exists) {
+            throw new Error(`The usuario ${usuarioID} does not exist`);
+        }
+        var usuario = await ctx.stub.getState(usuarioID)
+        usuario = JSON.parse(usuario)
+        const asset = {
+            id: usuarioID,
+            hash: usuario.hash,
+            saldoRetirada: usuario.saldoRetirada,
+            saldoParaEnviar: 2000,
+        };
+        const buffer = Buffer.from(JSON.stringify(asset));
+        await ctx.stub.putState(usuarioID, buffer);
+    }
+
     async deleteUsuario(ctx, usuarioID) {
         const exists = await this.usuarioExists(ctx, usuarioID);
         if (!exists) {
@@ -46,6 +80,40 @@ class ReconhecimentoContract extends Contract {
         await ctx.stub.deleteState(usuarioID);
     }
 
+    async eviarSaldo(ctx, usuarioID1, usuarioID2, value) {
+        const valueIsMultiple = value % 100
+        const exists1 = await this.usuarioExists(ctx, usuarioID1);
+        const exists2 = await this.usuarioExists(ctx, usuarioID2);
+        if (!exists1 && !exists2) {
+            throw new Error(`One of the users dont exist`);
+        }
+        else if (valueIsMultiple !== 0) {
+            throw new Error(`The value must be multiple of 100`);
+        }
+
+        var usuario1 = await ctx.stub.getState(usuarioID1)
+        usuario1 = JSON.parse(usuario1)
+        const asset1 = {
+            id: usuario1.usuarioID,
+            hash: usuario1.hash,
+            saldoRetirada: usuario1.saldoRetirada,
+            saldoParaEnviar: usuario1.saldoParaEnviar - value
+        };
+        const buffer1 = Buffer.from(JSON.stringify(asset1));
+        await ctx.stub.putState(usuarioID1, buffer1);
+
+
+        var usuario2 = await ctx.stub.getState(usuarioID2)
+        usuario2 = JSON.parse(usuario2)
+        const asset2 = {
+            id: usuario2.usuarioID,
+            hash: usuario2.hash,
+            saldoRetirada: usuario2.saldoRetirada + value,
+            saldoParaEnviar: usuario2.saldoParaEnviar
+        };
+        const buffer2 = Buffer.from(JSON.stringify(asset2));
+        await ctx.stub.putState(usuarioID2, buffer2);
+    }
 }
 
 module.exports = ReconhecimentoContract;
