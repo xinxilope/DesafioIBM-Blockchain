@@ -93,11 +93,15 @@ class ReconhecimentoContract extends Contract {
 
         var usuario1 = await ctx.stub.getState(usuarioID1)
         usuario1 = JSON.parse(usuario1)
+        if ((usuario1.saldoParaEnviar - Number(value)) < 0) {
+            throw new Error(`Insufiscient funds`);
+        }
+
         const asset1 = {
             id: usuario1.usuarioID,
             hash: usuario1.hash,
             saldoRetirada: usuario1.saldoRetirada,
-            saldoParaEnviar: usuario1.saldoParaEnviar - value
+            saldoParaEnviar: usuario1.saldoParaEnviar - Number(value)
         };
         const buffer1 = Buffer.from(JSON.stringify(asset1));
         await ctx.stub.putState(usuarioID1, buffer1);
@@ -108,7 +112,7 @@ class ReconhecimentoContract extends Contract {
         const asset2 = {
             id: usuario2.usuarioID,
             hash: usuario2.hash,
-            saldoRetirada: usuario2.saldoRetirada + value,
+            saldoRetirada: usuario2.saldoRetirada + Number(value),
             saldoParaEnviar: usuario2.saldoParaEnviar
         };
         const buffer2 = Buffer.from(JSON.stringify(asset2));
