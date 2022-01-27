@@ -1,19 +1,6 @@
 const Usuario = require('../models/usuarioModel')
 
 
-
-hashCode = function(s) {
-    var h = 0, l = s.length, i = 0;
-    if ( l > 0 )
-        while (i < l)
-        h = (h << 5) - h + s.charCodeAt(i++) | 0;
-    return h;
-    };
-
-
-
-
-
 const listaTodosUsuarios = async (req, res) => {
     try {
         const todosUsuarios = await Usuario.find()
@@ -74,21 +61,11 @@ const deleteUsuario = async (req, res) => {
     }
 }
 
-const criaHash = async (req, res) => {
-    try {
-        const hash = hashCode(req.body.hash)
-        res.status(201).json(hash)
-    } catch (error) {
-        res.status(500).json({msg:error})
-    }
-}
-
 
 module.exports = {
     listaTodosUsuarios,
     criaUsuario,
     listaUmUsuario,
     updateUsuario,
-    deleteUsuario,
-    criaHash
+    deleteUsuario
 }
