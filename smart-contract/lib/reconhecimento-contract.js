@@ -9,8 +9,6 @@ let cicloAtivo = false
 
 
 class ReconhecimentoContract extends Contract {
-
-//padrao
     async usuarioExists(ctx, usuarioID) {
         const buffer = await ctx.stub.getState(usuarioID);
         return (!!buffer && buffer.length > 0);
@@ -41,23 +39,6 @@ class ReconhecimentoContract extends Contract {
         return asset;
     }
 
-    async updateUsuario(ctx, usuarioID, value) {
-        const exists = await this.usuarioExists(ctx, usuarioID);
-        if (!exists) {
-            throw new Error(`The usuario ${usuarioID} does not exist`);
-        }
-        var usuario = await ctx.stub.getState(usuarioID)
-        usuario = JSON.parse(usuario)
-        const asset = {
-            id: usuarioID,
-            hash: value,
-            saldoRetirada: usuario.saldoRetirada,
-            saldoParaEnviar: usuario.saldoParaEnviar,
-        };
-        const buffer = Buffer.from(JSON.stringify(asset));
-        await ctx.stub.putState(usuarioID, buffer);
-    }
-
     async deleteUsuario(ctx, usuarioID) {
         const exists = await this.usuarioExists(ctx, usuarioID);
         if (!exists) {
@@ -66,7 +47,6 @@ class ReconhecimentoContract extends Contract {
         await ctx.stub.deleteState(usuarioID);
     }
 
-//custom
     async eviarSaldo(ctx, usuarioID1, usuarioID2, value) {
         if (cicloAtivo == true) {
             const valueIsMultiple = value % 100
