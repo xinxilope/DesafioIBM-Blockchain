@@ -118,6 +118,36 @@ class ReconhecimentoContract extends Contract {
         const buffer2 = Buffer.from(JSON.stringify(asset2));
         await ctx.stub.putState(usuarioID2, buffer2);
     }
+
+    async iniciaCiclo(ctx) {
+        const startKey = '0';
+        const endKey = '999';
+        const iterator = await ctx.stub.getStateByRange(startKey, endKey);
+        const allResults = [];
+
+        
+        while (true) {
+            const res = await iterator.next();
+
+            if (res.value && res.value.value.toString()) {
+                console.log(res.value.value.toString('utf8'));
+
+                const Key = res.value.key;
+                let Record;
+                try {
+                    Record = JSON.parse(res.value.value.toString('utf8'));
+                } catch (err) {
+                    console.log(err);
+                    Record = res.value.value.toString('utf8');
+                }
+                allResults.push({ Key, Record });
+            }
+            if (res.done) {
+                await iterator.close();
+                return JSON.stringify({msg: "concluido"});
+            }
+        }
+    }
 }
 
 module.exports = ReconhecimentoContract;
