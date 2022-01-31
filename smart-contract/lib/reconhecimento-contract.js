@@ -176,13 +176,6 @@ class ReconhecimentoContract extends Contract {
         }
     }
 
-    async verificarChave(ctx,usuario){
-        let buffer = await ctx.stub.getState(usuario);
-        const usuinfo = JSON.parse(buffer.toString());
-        let usuchave = usuinfo.chave;
-        return JSON.stringify(usuchave);
-    }
-
     async usuarioExists(ctx, usuarioID) {
         const buffer = await ctx.stub.getState(usuarioID);
         return (!!buffer && buffer.length > 0);
