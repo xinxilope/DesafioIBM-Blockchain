@@ -22,7 +22,7 @@ class ReconhecimentoContract extends Contract {
         const asset = {
             id: usuarioID,
             chave:uuidv4(),
-            hash: value,
+            info: value,
             saldoRetirada: 0,
             saldoParaEnviar: 0,
         };
@@ -47,11 +47,12 @@ class ReconhecimentoContract extends Contract {
         }
         await ctx.stub.deleteState(usuarioID);
     }
-    async teste(ctx,usuario,chave){
+
+    async verificarChave(ctx,usuario){
         let buffer = await ctx.stub.getState(usuario);
         const usuinfo = JSON.parse(buffer.toString());
         let usuchave = usuinfo.chave;
-        return JSON.stringify(usuinfo, usuchave);
+        return JSON.stringify(usuchave);
     }
 
     async eviarSaldo(ctx, usuarioID1, usuarioChave, usuarioID2, value) {
@@ -80,7 +81,7 @@ class ReconhecimentoContract extends Contract {
             const asset1 = {
                 id: usuario1.usuarioID,
                 chave:usuario1.chave,
-                hash: usuario1.hash,
+                info: usuario1.info,
                 saldoRetirada: usuario1.saldoRetirada,
                 saldoParaEnviar: usuario1.saldoParaEnviar - Number(value)
             };
@@ -93,7 +94,7 @@ class ReconhecimentoContract extends Contract {
             const asset2 = {
                 id: usuario2.usuarioID,
                 chave:usuario2.chave,
-                hash: usuario2.hash,
+                info: usuario2.info,
                 saldoRetirada: usuario2.saldoRetirada + Number(value),
                 saldoParaEnviar: usuario2.saldoParaEnviar
             };
@@ -126,7 +127,7 @@ class ReconhecimentoContract extends Contract {
                     const asset = {
                         id: usuario.id,
                         chave:usuario.chave,
-                        hash: usuario.hash,
+                        info: usuario.info,
                         saldoRetirada: usuario.saldoRetirada,
                         saldoParaEnviar: 2000,
                     };
@@ -183,7 +184,7 @@ class ReconhecimentoContract extends Contract {
             const asset1 = {
                 id: usuario1.usuarioID,
                 chave:usuario1.chave,
-                hash: usuario1.hash,
+                info: usuario1.info,
                 saldoRetirada: usuario1.saldoRetirada - Number(value),
                 saldoParaEnviar: usuario1.saldoParaEnviar
             };
@@ -196,7 +197,7 @@ class ReconhecimentoContract extends Contract {
             const asset2 = {
                 id: usuario2.usuarioID,
                 chave:usuario2.chave,
-                hash: usuario2.hash,
+                info: usuario2.info,
                 saldoRetirada: usuario2.saldoRetirada + Number(value),
                 saldoParaEnviar: usuario2.saldoParaEnviar
             };
