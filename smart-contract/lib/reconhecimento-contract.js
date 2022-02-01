@@ -6,6 +6,9 @@
 
 const { Contract } = require('fabric-contract-api');
 const { v4: uuidv4 } = require('uuid');
+const Auxx = require('./Auxx')
+const fs = require('fs')
+
 let cicloAtivo = false;
 let pontosRecebidosCiclo = 0;
 
@@ -213,6 +216,26 @@ class ReconhecimentoContract extends Contract {
             throw new Error(`The usuario ${usuarioID} does not exist`);
         }
         await ctx.stub.deleteState(usuarioID);
+    }
+
+    async readUsuarioHistory(ctx, usuarioID) {
+        const exists = await this.usuarioExists(ctx, usuarioID)
+        if (!exists) {
+            throw new Error(`The usuario ${usuarioID} does not exist`);
+        }
+        const history = await ctx.stub.getHistoryForKey(usuarioID)
+        const usuarioHistory = history !== undefined ? await Auxx.iteratorForJSON(history, true) : []
+        const stringUsuarioHistory = JSON.stringify(usuarioHistory)
+        fs.writeFile('history.json', stringUsuarioHistory, err => {
+            if (err) {
+                console.error(err);
+            }
+            console.log('History created!');
+        })
+        return {
+            status: 'Ok',
+            history: stringUsuarioHistory
+        }
     }
 }
 
