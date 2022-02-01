@@ -6,13 +6,12 @@
 
 const { Contract } = require('fabric-contract-api');
 const { v4: uuidv4 } = require('uuid');
-const Auxx = require('./Auxx')
-const fs = require('fs')
 
 let cicloAtivo = false;
 let pontosRecebidosCiclo = 0;
 
 class ReconhecimentoContract extends Contract {
+//custom
     async iniciaCiclo(ctx) {
         const identity = ctx.clientIdentity;
         const checkAttr = identity.assertAttributeValue('RH', 'true');
@@ -179,6 +178,7 @@ class ReconhecimentoContract extends Contract {
         }
     }
 
+//default methods
     async usuarioExists(ctx, usuarioID) {
         const buffer = await ctx.stub.getState(usuarioID);
         return (!!buffer && buffer.length > 0);
