@@ -14,7 +14,7 @@ class ReconhecimentoContract extends Contract {
 //custom
     async iniciaCiclo(ctx) {
         const identity = ctx.clientIdentity;
-        const checkAttr = identity.assertAttributeValue('RH', 'true');
+        const checkAttr = identity.assertAttributeValue('rh', 'true');
         if (checkAttr) {
             if (cicloAtivo === false) {
                 const startKey = '0';
@@ -24,7 +24,6 @@ class ReconhecimentoContract extends Contract {
                 pontosRecebidosCiclo = 0
         
         
-                // eslint-disable-next-line no-constant-condition
                 while (true) {
                     const res = await iterator.next();
         
@@ -36,7 +35,6 @@ class ReconhecimentoContract extends Contract {
                         const asset = {
                             id: usuario.id,
                             chave:usuario.chave,
-                            info: usuario.info,
                             saldoRetirada: usuario.saldoRetirada,
                             saldoParaEnviar: 2000,
                         };
@@ -85,7 +83,6 @@ class ReconhecimentoContract extends Contract {
             const asset1 = {
                 id: usuario1.usuarioID,
                 chave:usuario1.chave,
-                info: usuario1.info,
                 saldoRetirada: usuario1.saldoRetirada,
                 saldoParaEnviar: usuario1.saldoParaEnviar - Number(value)
             };
@@ -98,7 +95,6 @@ class ReconhecimentoContract extends Contract {
             const asset2 = {
                 id: usuario2.usuarioID,
                 chave:usuario2.chave,
-                info: usuario2.info,
                 saldoRetirada: usuario2.saldoRetirada + Number(value),
                 saldoParaEnviar: usuario2.saldoParaEnviar
             };
@@ -140,7 +136,6 @@ class ReconhecimentoContract extends Contract {
             const asset1 = {
                 id: usuario1.usuarioID,
                 chave:usuario1.chave,
-                info: usuario1.info,
                 saldoRetirada: usuario1.saldoRetirada - Number(value),
                 saldoParaEnviar: usuario1.saldoParaEnviar
             };
@@ -153,7 +148,6 @@ class ReconhecimentoContract extends Contract {
             const asset2 = {
                 id: usuario2.usuarioID,
                 chave:usuario2.chave,
-                info: usuario2.info,
                 saldoRetirada: usuario2.saldoRetirada + Number(value),
                 saldoParaEnviar: usuario2.saldoParaEnviar
             };
@@ -166,7 +160,7 @@ class ReconhecimentoContract extends Contract {
 
     async finalizaCiclo(ctx) {
         const identity = ctx.clientIdentity;
-        const checkAttr = identity.assertAttributeValue('RH', 'true');
+        const checkAttr = identity.assertAttributeValue('rh', 'true');
         if (checkAttr) {
             if (cicloAtivo === true) {
                 cicloAtivo = false;
@@ -184,7 +178,7 @@ class ReconhecimentoContract extends Contract {
         return (!!buffer && buffer.length > 0);
     }
 
-    async createUsuario(ctx, usuarioID, value) {
+    async createUsuario(ctx, usuarioID) {
         const exists = await this.usuarioExists(ctx, usuarioID);
         if (exists) {
             throw new Error(`The usuario ${usuarioID} already exists`);
@@ -192,7 +186,6 @@ class ReconhecimentoContract extends Contract {
         const asset = {
             id: usuarioID,
             chave:uuidv4(),
-            info: value,
             saldoRetirada: 0,
             saldoParaEnviar: 0,
         };
