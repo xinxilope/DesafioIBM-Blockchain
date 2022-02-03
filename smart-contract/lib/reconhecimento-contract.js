@@ -25,6 +25,7 @@ class ReconhecimentoContract extends Contract {
                 const iterator = await ctx.stub.getStateByRange(startKey, endKey);
                 cicloAtivo = true;
                 pontosRecebidosCiclo = 0
+
                 txNoCiclo = 0
                 txHistoryList = []
         
@@ -187,12 +188,16 @@ class ReconhecimentoContract extends Contract {
     }
 
     async TxHistory(ctx) {
+        if (txNoCiclo < 1) {
+            throw new Error('Nenhuma transacao aconteceu no ciclo ate o momento!');
+        }
+        txHistoryList = []
         const history = await ctx.stub.getHistoryForKey('TxHistory')
         const TxHistory = history !== undefined ? await Auxx.iteratorForJSON(history, true) : []
         for(let i = 0; i < txNoCiclo; i++) {
             txHistoryList.push(TxHistory[i].transaction)
-            return txHistoryList
         }
+        return txHistoryList
     }
 
 //default methods
