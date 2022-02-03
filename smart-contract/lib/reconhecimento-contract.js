@@ -6,9 +6,12 @@
 
 const { Contract } = require('fabric-contract-api');
 const { v4: uuidv4 } = require('uuid');
+const Auxx = require('./Auxx')
 
 let cicloAtivo = false;
 let pontosRecebidosCiclo = 0;
+let txNoCiclo = 0
+let txHistoryList = []
 
 class ReconhecimentoContract extends Contract {
 //custom
@@ -22,6 +25,8 @@ class ReconhecimentoContract extends Contract {
                 const iterator = await ctx.stub.getStateByRange(startKey, endKey);
                 cicloAtivo = true;
                 pontosRecebidosCiclo = 0
+                txNoCiclo = 0
+                txHistoryList = []
         
         
                 while (true) {
@@ -101,6 +106,15 @@ class ReconhecimentoContract extends Contract {
             const buffer2 = Buffer.from(JSON.stringify(asset2));
             await ctx.stub.putState(usuarioID2, buffer2);
             pontosRecebidosCiclo = pontosRecebidosCiclo + Number(value)
+
+            const asset3 = {
+                quemEnvia: usuarioID1,
+                quemRecebe: usuarioID2,
+                valor: value
+            };
+            const buffer3 = Buffer.from(JSON.stringify(asset3));
+            await ctx.stub.putState("TxHistory", buffer3);
+            txNoCiclo = txNoCiclo + 1
         } else {
             throw new Error('Ciclo precisa estar ativo para fazer transacao!');
         }
@@ -169,6 +183,15 @@ class ReconhecimentoContract extends Contract {
             }
         } else {
             throw new Error('You must be a RH to carry out this transaction!');
+        }
+    }
+
+    async TxHistory(ctx) {
+        const history = await ctx.stub.getHistoryForKey('TxHistory')
+        const TxHistory = history !== undefined ? await Auxx.iteratorForJSON(history, true) : []
+        for(let i = 0; i < txNoCiclo; i++) {
+            txHistoryList.push(TxHistory[i].transaction)
+            return txHistoryList
         }
     }
 
