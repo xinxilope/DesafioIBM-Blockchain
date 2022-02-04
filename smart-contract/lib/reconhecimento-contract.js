@@ -172,7 +172,7 @@ class ReconhecimentoContract extends Contract {
             await ctx.stub.putState(usuarioID1, buffer1);
 
 
-            let usuario2 = await ctx.stub.getState('999');
+            let usuario2 = await ctx.stub.getState('retiradas@compass.uol');
             usuario2 = JSON.parse(usuario2);
             const asset2 = {
                 id: usuario2.usuarioID,
@@ -181,7 +181,7 @@ class ReconhecimentoContract extends Contract {
                 saldoParaEnviar: usuario2.saldoParaEnviar
             };
             const buffer2 = Buffer.from(JSON.stringify(asset2));
-            await ctx.stub.putState('999', buffer2);
+            await ctx.stub.putState('retiradas@compass.uol', buffer2);
         } else {
             throw new Error('Ciclo precisa estar ativo para fazer transacao!');
         }
