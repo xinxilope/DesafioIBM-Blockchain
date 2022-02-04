@@ -80,6 +80,20 @@ class ReconhecimentoContract extends Contract {
             else if (pontosRecebidosCiclo >= 2000) {
                 throw new Error('Voce ja recebeu o maximo de pontos disponiveis nesse ciclo (2000 pontos)');
             }
+            else if (usuarioID1 == usuarioID2) {
+                throw new Error('Voce nao pode enviar pontos para si mesmo!');
+            }
+            txHistoryList = []
+            const history = await ctx.stub.getHistoryForKey('TxHistory')
+            const TxHistory = history !== undefined ? await Auxx.iteratorForJSON(history, true) : []
+            for(let i = 0; i < txNoCiclo; i++) {
+                txHistoryList.push(TxHistory[i].transaction)
+            }
+            for (let j = 0; j < txHistoryList.length; j++) {
+                if (usuarioID2 == txHistoryList[j].quemEnvia && txHistoryList[j].quemRecebe == usuarioID1) {
+                    throw new Error('Voce nao pode enviar pontos de volta para quem ja enviou para voce nesse ciclo!')
+                }
+            }
             let usuario1 = await ctx.stub.getState(usuarioID1);
             usuario1 = JSON.parse(usuario1);
             if ((usuario1.saldoParaEnviar - Number(value)) < 0) {
