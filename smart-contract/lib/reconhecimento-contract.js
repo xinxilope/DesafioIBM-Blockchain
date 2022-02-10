@@ -130,6 +130,7 @@ class ReconhecimentoContract extends Contract {
             const buffer3 = Buffer.from(JSON.stringify(asset3));
             await ctx.stub.putState("TxHistory", buffer3);
             txNoCiclo = txNoCiclo + 1
+            return JSON.stringify('saldo enviado com sucesso!');
         } else {
             throw new Error('Ciclo precisa estar ativo para fazer transacao!');
         }
@@ -142,7 +143,7 @@ class ReconhecimentoContract extends Contract {
         if (cicloAtivo === true) {
             const valueIsMultiple = value % 100;
             const exists1 = await this.usuarioExists(ctx, usuarioID1);
-            const exists2 = await this.usuarioExists(ctx, '999');
+            const exists2 = await this.usuarioExists(ctx, 'retiradas@compass.uol');
             if (!exists1 && !exists2) {
                 throw new Error('One of the users dont exist');
             }
@@ -182,6 +183,7 @@ class ReconhecimentoContract extends Contract {
             };
             const buffer2 = Buffer.from(JSON.stringify(asset2));
             await ctx.stub.putState('retiradas@compass.uol', buffer2);
+            return JSON.stringify('saldo retirado com sucesso!');
         } else {
             throw new Error('Ciclo precisa estar ativo para fazer transacao!');
         }
@@ -193,6 +195,7 @@ class ReconhecimentoContract extends Contract {
         if (checkAttr) {
             if (cicloAtivo === true) {
                 cicloAtivo = false;
+                return JSON.stringify('ciclo finalizado!');
             }  else {
                 throw new Error('Ciclo precisa estar ativo!');
             }
