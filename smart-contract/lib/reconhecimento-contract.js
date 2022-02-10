@@ -215,6 +215,7 @@ class ReconhecimentoContract extends Contract {
             txHistoryList.push(TxHistory[i].transaction)
         }
         return txHistoryList
+        
     }
 
 //default methods
